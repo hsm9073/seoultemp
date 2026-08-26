@@ -1,229 +1,164 @@
-```python
 import streamlit as st
 import pandas as pd
 
-# =========================================================
-# 기본 설정
-# =========================================================
 st.set_page_config(
-    page_title="SEOUL HEAT INDEX",
+    page_title="SEOUL HEAT",
     page_icon="🔥",
     layout="wide"
 )
 
-# =========================================================
-# CSS - 다크 & 네온 스타일
-# =========================================================
+# =========================
+# 디자인
+# =========================
 st.markdown("""
 <style>
+.stApp {
+    background:
+        radial-gradient(circle at 10% 10%, #351700 0%, transparent 30%),
+        radial-gradient(circle at 90% 10%, #301000 0%, transparent 30%),
+        #080808;
+    color: white;
+}
 
-    /* 전체 배경 */
-    .stApp {
-        background:
-            radial-gradient(circle at 10% 10%, #2b1700 0%, transparent 30%),
-            radial-gradient(circle at 90% 20%, #351000 0%, transparent 30%),
-            #080808;
-        color: #ffffff;
-    }
+.block-container {
+    max-width: 1200px;
+    padding-top: 45px;
+}
 
-    /* 기본 폰트 */
-    html, body, [class*="css"] {
-        font-family: Arial, sans-serif;
-    }
+.hero-small {
+    color: #ff7900;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 5px;
+}
 
-    /* 상단 여백 */
-    .block-container {
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-        max-width: 1200px;
-    }
+.hero-title {
+    font-size: 58px;
+    font-weight: 900;
+    line-height: 1;
+    margin-top: 10px;
+    background: linear-gradient(90deg, white, #ffb347, #ff5c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    /* 메인 타이틀 */
-    .hero {
-        padding: 20px 0 35px 0;
-    }
+.hero-text {
+    color: #888;
+    margin-top: 18px;
+    font-size: 16px;
+}
 
-    .hero-small {
-        color: #ff7a00;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 4px;
-        margin-bottom: 8px;
-    }
+.line {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #ff6500,
+        transparent
+    );
+    margin: 35px 0;
+}
 
-    .hero-title {
-        font-size: 58px;
-        font-weight: 900;
-        letter-spacing: -3px;
-        line-height: 1;
-        margin: 0;
-        background: linear-gradient(90deg, #ffffff, #ffb347, #ff5e00);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+.section {
+    font-size: 25px;
+    font-weight: 900;
+    margin: 30px 0 15px 0;
+}
 
-    .hero-description {
-        color: #999999;
-        font-size: 16px;
-        margin-top: 15px;
-    }
-
-    /* 구분선 */
-    .line {
-        height: 1px;
-        background: linear-gradient(
-            90deg,
-            transparent,
-            #ff6500,
-            transparent
+.winner {
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(255,80,0,.35),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(255,90,0,.25),
+            rgba(255,180,0,.05)
         );
-        margin: 20px 0 30px 0;
-    }
+    border: 1px solid rgba(255,120,30,.6);
+    border-radius: 25px;
+    padding: 35px;
+    box-shadow: 0 0 45px rgba(255,70,0,.15);
+}
 
-    /* 카드 */
-    .card {
-        background: linear-gradient(
-            145deg,
-            rgba(255, 102, 0, 0.16),
-            rgba(255, 255, 255, 0.035)
-        );
-        border: 1px solid rgba(255, 110, 0, 0.35);
-        border-radius: 20px;
-        padding: 28px;
-        box-shadow:
-            0 0 30px rgba(255, 80, 0, 0.08),
-            inset 0 1px rgba(255,255,255,0.08);
-    }
+.winner-label {
+    color: #ff9a3d;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
 
-    /* 最热年 */
-    .winner-card {
-        background:
-            radial-gradient(
-                circle at 90% 10%,
-                rgba(255, 80, 0, 0.35),
-                transparent 35%
-            ),
-            linear-gradient(
-                135deg,
-                rgba(255, 90, 0, 0.25),
-                rgba(255, 180, 0, 0.05)
-            );
+.winner-year {
+    font-size: 75px;
+    font-weight: 900;
+    margin: 5px 0;
+}
 
-        border: 1px solid rgba(255, 120, 30, 0.65);
-        border-radius: 24px;
-        padding: 35px;
-        box-shadow:
-            0 0 45px rgba(255, 70, 0, 0.14),
-            inset 0 1px rgba(255,255,255,0.1);
-    }
+.winner-temp {
+    font-size: 30px;
+    font-weight: 800;
+    color: #ff8424;
+}
 
-    .winner-label {
-        color: #ff9b42;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 3px;
-    }
+.winner-description {
+    color: #999;
+    margin-top: 8px;
+}
 
-    .winner-year {
-        font-size: 76px;
-        font-weight: 950;
-        line-height: 1;
-        margin: 10px 0;
-        color: white;
-    }
+.rank {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 15px;
+    padding: 17px 22px;
+    margin: 9px 0;
+}
 
-    .winner-temp {
-        font-size: 30px;
-        font-weight: 800;
-        color: #ff8a24;
-    }
+.rank-number {
+    color: #ff7900;
+    font-weight: 900;
+    font-size: 21px;
+}
 
-    .winner-text {
-        color: #aaaaaa;
-        margin-top: 10px;
-    }
+.rank-year {
+    font-size: 20px;
+    font-weight: 800;
+}
 
-    /* 섹션 제목 */
-    .section-title {
-        font-size: 25px;
-        font-weight: 850;
-        margin: 35px 0 15px 0;
-    }
+.rank-temp {
+    float: right;
+    color: #ff9a3d;
+    font-size: 20px;
+    font-weight: 800;
+}
 
-    /* 순위 */
-    .rank-card {
-        background: rgba(255,255,255,0.035);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 15px;
-        padding: 16px 20px;
-        margin-bottom: 10px;
-        transition: 0.2s;
-    }
-
-    .rank-card:hover {
-        border-color: rgba(255,100,0,0.5);
-        background: rgba(255,100,0,0.06);
-    }
-
-    .rank-number {
-        font-size: 22px;
-        font-weight: 900;
-        color: #ff7b00;
-    }
-
-    .rank-year {
-        font-size: 20px;
-        font-weight: 800;
-    }
-
-    .rank-temp {
-        font-size: 20px;
-        font-weight: 800;
-        color: #ff9a3c;
-        float: right;
-    }
-
-    /* Streamlit 입력창 */
-    div[data-baseweb="input"],
-    div[data-baseweb="select"] {
-        background-color: #151515 !important;
-    }
-
-    /* metric */
-    div[data-testid="stMetric"] {
-        background: rgba(255,255,255,0.035);
-        border: 1px solid rgba(255,255,255,0.08);
-        padding: 20px;
-        border-radius: 16px;
-    }
-
-    /* 데이터프레임 */
-    div[data-testid="stDataFrame"] {
-        border-radius: 15px;
-        overflow: hidden;
-    }
-
-    /* 작은 글씨 */
-    .muted {
-        color: #777777;
-        font-size: 13px;
-    }
+div[data-testid="stMetric"] {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 20px;
+}
 
 </style>
 """, unsafe_allow_html=True)
 
 
-# =========================================================
+# =========================
 # 데이터 불러오기
-# =========================================================
+# =========================
 @st.cache_data
 def load_data():
 
     df = pd.read_csv("seoul.csv")
 
-    df["날짜"] = df["날짜"].astype(str).str.strip()
-    df["날짜"] = pd.to_datetime(df["날짜"], errors="coerce")
+    # 날짜
+    df["날짜"] = pd.to_datetime(
+        df["날짜"],
+        errors="coerce"
+    )
 
+    # 숫자로 변환
     df["평균기온"] = pd.to_numeric(
         df["평균기온"],
         errors="coerce"
@@ -239,8 +174,6 @@ def load_data():
     )
 
     df["연도"] = df["날짜"].dt.year
-    df["월"] = df["날짜"].dt.month
-    df["일"] = df["날짜"].dt.day
 
     return df
 
@@ -248,62 +181,58 @@ def load_data():
 df = load_data()
 
 
-# =========================================================
-# HERO
-# =========================================================
+# =========================
+# 제목
+# =========================
 st.markdown("""
-<div class="hero">
+<div class="hero-small">
+SEOUL WEATHER DATA
+</div>
 
-    <div class="hero-small">
-        SEOUL WEATHER DATA
-    </div>
+<div class="hero-title">
+WHEN WAS SEOUL<br>
+THE HOTTEST?
+</div>
 
-    <div class="hero-title">
-        WHEN WAS SEOUL<br>
-        THE HOTTEST?
-    </div>
-
-    <div class="hero-description">
-        원하는 날짜를 선택하고, 같은 기간의 역대 기온을 비교해보세요.
-    </div>
-
+<div class="hero-text">
+원하는 날짜를 선택하면 같은 기간의 역대 기온을 비교합니다.
 </div>
 
 <div class="line"></div>
 """, unsafe_allow_html=True)
 
 
-# =========================================================
+# =========================
 # 날짜 선택
-# =========================================================
+# =========================
 st.markdown(
-    '<div class="section-title">📅 분석 기간</div>',
+    '<div class="section">📅 ANALYSIS PERIOD</div>',
     unsafe_allow_html=True
 )
 
-date_col1, date_col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-with date_col1:
+with col1:
     start_date = st.date_input(
-        "START",
+        "시작 날짜",
         value=pd.Timestamp("2020-06-01").date()
     )
 
-with date_col2:
+with col2:
     end_date = st.date_input(
-        "END",
+        "종료 날짜",
         value=pd.Timestamp("2020-08-31").date()
     )
 
 
 if start_date > end_date:
-    st.error("START 날짜가 END 날짜보다 늦습니다.")
+    st.error("⚠️ 시작 날짜가 종료 날짜보다 늦습니다.")
     st.stop()
 
 
-# =========================================================
-# 기간 데이터 계산
-# =========================================================
+# =========================
+# 같은 월/일을 모든 연도에 적용
+# =========================
 start_month = start_date.month
 start_day = start_date.day
 
@@ -311,58 +240,53 @@ end_month = end_date.month
 end_day = end_date.day
 
 
-def get_period_data(data):
+results = []
 
-    results = []
+for year in sorted(df["연도"].unique()):
 
-    for year in sorted(data["연도"].unique()):
+    try:
 
-        try:
+        start = pd.Timestamp(
+            year=year,
+            month=start_month,
+            day=start_day
+        )
 
-            start = pd.Timestamp(
-                year=year,
-                month=start_month,
-                day=start_day
-            )
+        end = pd.Timestamp(
+            year=year,
+            month=end_month,
+            day=end_day
+        )
 
-            end = pd.Timestamp(
-                year=year,
-                month=end_month,
-                day=end_day
-            )
+        period = df[
+            (df["날짜"] >= start) &
+            (df["날짜"] <= end)
+        ]
 
-            period = data[
-                (data["날짜"] >= start) &
-                (data["날짜"] <= end)
-            ]
+        if len(period) >= 5:
 
-            if len(period) >= 5:
+            results.append({
+                "연도": int(year),
+                "평균기온": period["평균기온"].mean(),
+                "최고기온": period["최고기온"].max(),
+                "측정일수": len(period)
+            })
 
-                results.append({
-                    "연도": int(year),
-                    "평균기온": period["평균기온"].mean(),
-                    "최고기온": period["최고기온"].max(),
-                    "측정일수": len(period)
-                })
-
-        except:
-
-            continue
-
-    return pd.DataFrame(results)
+    except:
+        pass
 
 
-result = get_period_data(df)
+result = pd.DataFrame(results)
 
 
 if result.empty:
-    st.warning("선택한 기간에 비교할 수 있는 데이터가 없습니다.")
+    st.warning("선택한 기간의 데이터가 없습니다.")
     st.stop()
 
 
-# =========================================================
+# =========================
 # 결과 계산
-# =========================================================
+# =========================
 result["평균기온"] = result["평균기온"].round(1)
 result["최고기온"] = result["최고기온"].round(1)
 
@@ -371,42 +295,42 @@ hottest = result.loc[
 ]
 
 
-# =========================================================
-# WINNER
-# =========================================================
+# =========================
+# 가장 더운 해
+# =========================
 st.markdown(
-    '<div class="section-title">🔥 THE HOTTEST YEAR</div>',
+    '<div class="section">🔥 THE HOTTEST YEAR</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(f"""
-<div class="winner-card">
+<div class="winner">
 
-    <div class="winner-label">
-        #1 HOTTEST YEAR
-    </div>
+<div class="winner-label">
+#1 HOTTEST YEAR
+</div>
 
-    <div class="winner-year">
-        {int(hottest["연도"])}
-    </div>
+<div class="winner-year">
+{int(hottest["연도"])}년
+</div>
 
-    <div class="winner-temp">
-        {hottest["평균기온"]:.1f} °C
-    </div>
+<div class="winner-temp">
+{hottest["평균기온"]:.1f} °C
+</div>
 
-    <div class="winner-text">
-        선택한 기간의 평균기온이 가장 높았던 해입니다.
-    </div>
+<div class="winner-description">
+선택한 기간 동안 평균기온이 가장 높았던 해
+</div>
 
 </div>
 """, unsafe_allow_html=True)
 
 
-# =========================================================
-# 핵심 수치
-# =========================================================
+# =========================
+# 핵심 정보
+# =========================
 st.markdown(
-    '<div class="section-title">📌 KEY NUMBERS</div>',
+    '<div class="section">📌 KEY NUMBERS</div>',
     unsafe_allow_html=True
 )
 
@@ -414,7 +338,7 @@ c1, c2, c3 = st.columns(3)
 
 with c1:
     st.metric(
-        "평균기온",
+        "기간 평균기온",
         f'{hottest["평균기온"]:.1f} °C'
     )
 
@@ -427,82 +351,80 @@ with c2:
 with c3:
     st.metric(
         "비교한 연도",
-        f'{len(result)}년'
+        f'{len(result)}개'
     )
 
 
-# =========================================================
+# =========================
 # 그래프
-# =========================================================
+# =========================
 st.markdown(
-    '<div class="section-title">📈 YEAR BY YEAR</div>',
+    '<div class="section">📊 YEAR BY YEAR</div>',
     unsafe_allow_html=True
 )
 
-chart = result.sort_values("연도").set_index("연도")
+chart_data = result.sort_values("연도")
 
 st.bar_chart(
-    chart["평균기온"],
-    height=420
-)
-
-st.markdown(
-    '<div class="muted">선택한 날짜 구간의 연도별 평균기온</div>',
-    unsafe_allow_html=True
+    chart_data,
+    x="연도",
+    y="평균기온",
+    height=450
 )
 
 
-# =========================================================
+# =========================
 # TOP 5
-# =========================================================
+# =========================
 st.markdown(
-    '<div class="section-title">🏆 HOTTEST TOP 5</div>',
+    '<div class="section">🏆 HOTTEST TOP 5</div>',
     unsafe_allow_html=True
 )
 
 top5 = result.sort_values(
     "평균기온",
     ascending=False
-).head(5).reset_index(drop=True)
+).head(5)
 
 
-for i, row in top5.iterrows():
+for i, row in enumerate(
+    top5.itertuples(index=False),
+    start=1
+):
 
-    rank = i + 1
-
-    if rank == 1:
+    if i == 1:
         medal = "🥇"
-    elif rank == 2:
+    elif i == 2:
         medal = "🥈"
-    elif rank == 3:
+    elif i == 3:
         medal = "🥉"
     else:
-        medal = f"{rank}"
+        medal = str(i)
 
     st.markdown(f"""
-    <div class="rank-card">
+    <div class="rank">
 
         <span class="rank-number">
-            {medal}
+        {medal}
         </span>
 
         &nbsp;&nbsp;
 
         <span class="rank-year">
-            {int(row["연도"])}년
+        {row.연도}년
         </span>
 
         <span class="rank-temp">
-            {row["평균기온"]:.1f} °C
+        {row.평균기온:.1f} °C
         </span>
 
     </div>
     """, unsafe_allow_html=True)
 
 
-# =========================================================
-# 상세 데이터
-# =========================================================
+# =========================
+# 전체 데이터
+# =========================
 with st.expander("📋 전체 데이터 보기"):
 
     table = result.sort_values(
@@ -524,22 +446,21 @@ with st.expander("📋 전체 데이터 보기"):
     )
 
 
-# =========================================================
-# FOOTER
-# =========================================================
+# =========================
+# 하단
+# =========================
 st.markdown("""
 <br><br>
 
 <div style="
-    text-align:center;
-    color:#555;
-    font-size:12px;
-    padding:30px;
+text-align:center;
+color:#555;
+font-size:12px;
+padding:30px;
 ">
 
-    SEOUL HEAT INDEX<br>
-    Weather Data Visualization
+SEOUL HEAT INDEX<br>
+Weather Data Visualization
 
 </div>
 """, unsafe_allow_html=True)
-```
